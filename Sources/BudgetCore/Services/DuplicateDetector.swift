@@ -11,25 +11,30 @@ public struct DuplicateDetector: Sendable {
 
     /// Stable fingerprint for an externally sourced transaction: normalized merchant + amount + 5-minute time bucket.
     public static func fingerprint(merchant: String, amount: Money, date: Date) -> String {
-        // TODO(core-agent): tests
-        let bucket = Int(date.timeIntervalSince1970 / 300)
+        let bucket = Int((date.timeIntervalSince1970 / 300).rounded(.down))
         return "\(CategorizationEngine.normalize(merchant))|\(amount.rounded.amount)|\(bucket)"
     }
 
     /// Returns the existing transaction that `candidate` duplicates, if any.
     /// Match if fingerprints are equal, OR merchant (normalized) + amount match within `window`.
+    /// A transaction never duplicates itself (same id is ignored).
     public func existingDuplicate(of candidate: Transaction, in existing: [Transaction]) -> Transaction? {
-        // TODO(core-agent): implement + tests
+        let others = existing.filter { $0.id != candidate.id }
+
         if let fingerprint = candidate.externalFingerprint,
-           let match = existing.first(where: { $0.externalFingerprint == fingerprint }) {
+           let match = others.first(where: { $0.externalFingerprint == fingerprint }) {
             return match
         }
+
         let normalized = CategorizationEngine.normalize(candidate.merchant)
-        return existing.first { other in
-            other.id != candidate.id
-                && other.amount.rounded == candidate.amount.rounded
-                && CategorizationEngine.normalize(other.merchant) == normalized
-                && abs(other.date.timeIntervalSince(candidate.date)) <= window
-        }
+        let amount = candidate.amount.rounded
+        return others
+            .filter { other in
+                other.kind == candidate.kind
+                    && other.amount.rounded == amount
+                    && abs(other.date.timeIntervalSince(candidate.date)) <= window
+                    && CategorizationEngine.normalize(other.merchant) == normalized
+            }
+            .min { abs($0.date.timeIntervalSince(candidate.date)) < abs($1.date.timeIntervalSince(candidate.date)) }
     }
 }

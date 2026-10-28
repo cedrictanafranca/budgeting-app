@@ -28,7 +28,25 @@ public enum Theme {
         public static let fab = Color(light: "#111111", dark: "#FFFFFF")
         public static let fabForeground = Color(light: "#FFFFFF", dark: "#111111")
         public static let continueButton = Color(hex: "#34C759")
+
+        // Added by BudgetUI: adaptive variants for surfaces that must also work in dark mode.
+        public static let pillNeutral = Color(light: "#F3F4F6", dark: "#2C2C2E")
+        public static let pillPositive = Color(light: "#DCFCE7", dark: "#12351F")
+        public static let pillNegative = Color(light: "#FEE2E2", dark: "#3D1515")
+        public static let tabBar = Color(light: "#FFFFFF", dark: "#1C1C1E")
+        public static let tabActive = Color(light: "#EDEDF0", dark: "#3A3A3C")
+        public static let chartMuted = Color(light: "#C7C7CC", dark: "#636366")
+        public static let gridLine = Color(light: "#F0F0F3", dark: "#2C2C2E")
+        public static let shadow = Color.black.opacity(0.10)
+        public static let avatar = Color(hex: "#B83FD6")
     }
+
+    /// Fixed palette offered when creating categories/accounts (data colors, stored as hex).
+    public static let categoryPalette: [String] = [
+        "#111827", "#1E3A8A", "#2563EB", "#0EA5E9", "#60A5FA", "#14B8A6",
+        "#22C55E", "#F59E0B", "#F97316", "#EF4444", "#F43F5E", "#EC4899",
+        "#F472B6", "#A855F7", "#5B3DF5", "#6B7280",
+    ]
 
     // MARK: Typography (SF Pro via system fonts; rounded avoided to match Luna)
     public enum Fonts {

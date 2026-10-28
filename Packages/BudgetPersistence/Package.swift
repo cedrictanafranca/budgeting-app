@@ -10,7 +10,8 @@ let package = Package(
         .library(name: "BudgetPersistence", targets: ["BudgetPersistence"]),
     ],
     dependencies: [
-        .package(path: "../.."),
+        // `name:` lets `package: "BudgetKit"` resolve whatever the checkout folder is called.
+        .package(name: "BudgetKit", path: "../.."),
     ],
     targets: [
         .target(name: "BudgetPersistence", dependencies: [.product(name: "BudgetCore", package: "BudgetKit")]),

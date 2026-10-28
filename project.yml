@@ -32,33 +32,41 @@ targets:
     platform: iOS
     sources:
       - path: App/Budgeting
+      # The App Intents live in Sources/BudgetIntents (so `swift build` type-checks them on macOS)
+      # but are compiled straight into the app target instead of linked as the BudgetIntents
+      # package product: Xcode's App Intents metadata extraction reliably picks up intents and the
+      # AppShortcutsProvider only from the app target itself. Do not also link BudgetIntents.
+      - path: Sources/BudgetIntents
     dependencies:
       - package: BudgetKit
         product: BudgetCore
       - package: BudgetKit
         product: BudgetUI
-      - package: BudgetKit
-        product: BudgetIntents
       - package: BudgetPersistence
         product: BudgetPersistence
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cedrictanafranca.budgeting
         TARGETED_DEVICE_FAMILY: "1"
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
-        INFOPLIST_KEY_CFBundleDisplayName: Budget
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
     info:
       path: App/Budgeting/Info.plist
+      # XcodeGen writes this file on every `xcodegen generate` (merged with its defaults);
+      # edit the keys here, not the generated plist.
       properties:
         CFBundleDisplayName: Budget
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
         UIUserInterfaceStyle: Automatic
         ITSAppUsesNonExemptEncryption: false
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: false
+    # Also generated. The App Group must be enabled for your team in Xcode → Signing & Capabilities
+    # (same identifier), see docs/SHORTCUTS_SETUP.md. Must match BudgetPersistence.appGroupID.
     entitlements:
       path: App/Budgeting/Budgeting.entitlements
       properties:

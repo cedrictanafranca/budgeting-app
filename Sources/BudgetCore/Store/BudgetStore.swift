@@ -235,7 +235,7 @@ public extension BudgetStore {
         store.seedDefaultsIfNeeded()
         if sample {
             for transaction in DefaultData.sampleTransactions(categories: store.categories, accounts: store.accounts) {
-                try? store.add(transaction)
+                _ = try? store.add(transaction)
             }
         }
         return store
